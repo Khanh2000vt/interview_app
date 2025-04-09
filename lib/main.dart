@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:interview_app/bloc/interview/interview_bloc.dart';
 import 'package:interview_app/constants/app.dart';
 import 'package:interview_app/routing/router.dart';
 import 'package:interview_app/themes/theme.dart';
@@ -12,12 +14,22 @@ void main() {
 class MainApp extends StatelessWidget {
   const MainApp({super.key});
 
+  void _listenerInterview(context, state) {
+    interviewStateNotifier.value = state;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return ScreenUtilInit(
-      useInheritedMediaQuery: true,
-      designSize: Size(428, 926),
-      builder: (context, child) => MaterialMainApp(),
+    return BlocProvider(
+      create: (context) => InterviewBloc(),
+      child: BlocListener<InterviewBloc, InterviewState>(
+        listener: _listenerInterview,
+        child: ScreenUtilInit(
+          useInheritedMediaQuery: true,
+          designSize: Size(428, 926),
+          builder: (context, child) => MaterialMainApp(),
+        ),
+      ),
     );
   }
 }
