@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:interview_app/atomic/screens/auth/login/widgets/login_screen.dart';
+import 'package:interview_app/atomic/screens/auth/config/widgets/config_screen.dart';
+import 'package:interview_app/atomic/screens/main/home/widgets/home_screen.dart';
 import 'package:interview_app/bloc/interview/interview_bloc.dart';
 import 'package:interview_app/routing/routes.dart';
 
@@ -10,36 +11,34 @@ final ValueNotifier<InterviewState> interviewStateNotifier = ValueNotifier(
 );
 
 final GoRouter router = GoRouter(
-  initialLocation: Routes.login,
+  initialLocation: Routes.config,
   refreshListenable: interviewStateNotifier,
   redirect: (context, state) async {
     final interviewBloc = context.read<InterviewBloc>();
     final interviewState = interviewBloc.state;
-    final currentPath = state.uri.toString();
+    // final currentPath = state.uri.toString();
 
     switch (interviewState) {
       case InterviewInitial():
-        if (currentPath == Routes.login) {
-          return Routes.home;
-        }
+        return Routes.config;
       case ConfigInterview():
-        if (currentPath == Routes.home) {
-          return Routes.login;
-        }
+        return Routes.home;
+      case Unauthenticated():
+        return Routes.config;
     }
-    return null;
+    // return null;
   },
   routes: [
     GoRoute(
-      path: Routes.login,
+      path: Routes.config,
       builder: (context, state) {
-        return LoginScreens();
+        return ConfigScreen();
       },
     ),
     GoRoute(
       path: Routes.home,
       builder: (context, state) {
-        return LoginScreens();
+        return HomeScreen();
       },
     ),
   ],

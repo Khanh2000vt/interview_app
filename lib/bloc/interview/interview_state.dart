@@ -10,3 +10,5 @@ class ConfigInterview extends InterviewState {
   final String level;
   ConfigInterview(this.job, this.level);
 }
+
+class Unauthenticated extends InterviewState {}

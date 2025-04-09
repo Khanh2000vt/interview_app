@@ -8,3 +8,5 @@ class ConfigSuccess extends InterviewEvent {
   final String level;
   ConfigSuccess(this.job, this.level);
 }
+
+class RemoveConfig extends InterviewEvent {}

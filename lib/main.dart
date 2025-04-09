@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:interview_app/bloc/interview/interview_bloc.dart';
 import 'package:interview_app/constants/app.dart';
@@ -7,7 +8,8 @@ import 'package:interview_app/routing/router.dart';
 import 'package:interview_app/themes/theme.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
-void main() {
+Future<void> main() async {
+  await dotenv.load(fileName: ".env");
   runApp(const MainApp());
 }
 
@@ -47,7 +49,7 @@ class MaterialMainApp extends StatelessWidget {
       builder:
           (context, child) => ResponsiveBreakpoints.builder(
             child: child!,
-            breakpoints: breakpoints,
+            breakpoints: AppConstants().breakpoints,
           ),
     );
   }

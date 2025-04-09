@@ -111,6 +111,7 @@ class _InputAppState extends State<InputApp> {
       decoration: decoration,
       obscureText: _obscureText,
       style: style,
+      enabled: props.enabled,
       onChanged: (value) {
         setState(() {});
       },

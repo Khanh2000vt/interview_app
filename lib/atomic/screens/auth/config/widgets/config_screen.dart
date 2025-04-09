@@ -1,35 +1,36 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:interview_app/atomic/atoms/button/button_app.dart';
 import 'package:interview_app/atomic/atoms/button/button_app_model.dart';
 import 'package:interview_app/atomic/organisms/organisms.dart';
+import 'package:interview_app/bloc/interview/interview_bloc.dart';
 import 'package:interview_app/enums/common.dart';
 import 'package:interview_app/models/form_model.dart';
 import 'package:interview_app/themes/scale.dart';
 
-class LoginScreens extends StatelessWidget {
-  const LoginScreens({super.key});
+class ConfigScreen extends StatelessWidget {
+  const ConfigScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final _formKey = GlobalKey<FormBuilderState>();
+    final formKey = GlobalKey<FormBuilderState>();
     final formFields = FormAppModel([
       InputFieldModel(
-        name: 'email',
-        labelText: 'Email',
+        name: 'job',
+        labelText: 'Công việc',
         validators: [
-          FormBuilderValidators.required(errorText: 'Vui lòng nhập email'),
-          FormBuilderValidators.email(errorText: 'Email không hợp lệ'),
+          FormBuilderValidators.required(errorText: 'Vui lòng công việc'),
         ],
       ),
       InputFieldModel(
-        name: 'password',
-        labelText: 'Password',
-        inputPassword: true,
+        name: 'level',
+        labelText: 'Kinh nghiệm',
         validators: [
-          FormBuilderValidators.required(errorText: 'Vui lòng nhập password'),
-          FormBuilderValidators.password(minLength: 6),
+          FormBuilderValidators.required(
+            errorText: 'Vui lòng nhập kinh nghiệm',
+          ),
         ],
       ),
     ]);
@@ -42,7 +43,7 @@ class LoginScreens extends StatelessWidget {
       onTap: unfocusAll,
       child: Scaffold(
         resizeToAvoidBottomInset: true,
-        appBar: AppBar(title: const Text('Login')),
+        appBar: AppBar(title: const Text('Lựa chọn')),
         body: SafeArea(
           child: Padding(
             padding: EdgeInsets.only(left: scaleW(16), right: scaleW(16)),
@@ -53,21 +54,22 @@ class LoginScreens extends StatelessWidget {
                 Expanded(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: [FormApp(formFields, formKey: _formKey)],
+                    children: [FormApp(formFields, formKey: formKey)],
                   ),
                 ),
                 ButtonApp(
                   model: ButtonAppModel(
-                    text: 'Login',
+                    text: 'Phỏng vấn',
                     type: EButtonType.tonal,
                     onPressed: () {
-                      if (_formKey.currentState?.saveAndValidate() ?? false) {
-                        final formData = _formKey.currentState!.value;
+                      if (formKey.currentState?.saveAndValidate() ?? false) {
+                        final formData = formKey.currentState!.value;
                         print('Form data: $formData');
+                        context.read<InterviewBloc>().add(
+                          ConfigSuccess(formData['job'], formData['level']),
+                        );
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Đăng nhập thành công!'),
-                          ),
+                          const SnackBar(content: Text('Vào phỏng vấn thôi!')),
                         );
                         return;
                       }

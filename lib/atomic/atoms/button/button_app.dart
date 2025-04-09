@@ -10,7 +10,7 @@ class ButtonApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: heightElement,
+      height: AppConstants().heightElement,
       width: model.widthButton,
       child: model.getWidgetButton(),
     );
