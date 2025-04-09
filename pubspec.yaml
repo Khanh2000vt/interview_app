@@ -25,7 +25,7 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-    assets:
+  assets:
     - assets/svgs/message_fill.svg
     - assets/svgs/eye_stroke.svg
     - assets/svgs/eye-off_stroke.svg
