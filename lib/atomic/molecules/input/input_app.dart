@@ -41,8 +41,7 @@ class _InputAppState extends State<InputApp> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = ColorsApp();
-    final iconColor = _isFocused ? colors.primary : colors.gray1;
+    final iconColor = _isFocused ? ColorsApp.primary : ColorsApp.gray1;
     final props = widget.model;
 
     Widget? suffixIcon() {
@@ -51,7 +50,7 @@ class _InputAppState extends State<InputApp> {
           return null;
         }
         return PressableSvg(
-          name: _obscureText ? SvgAssets().eyeOffStroke : SvgAssets().eyeStroke,
+          name: _obscureText ? SvgAssets.eyeOffStroke : SvgAssets.eyeStroke,
           color: iconColor,
           size: 20.0,
           onTap: () {
@@ -85,21 +84,21 @@ class _InputAppState extends State<InputApp> {
               : null,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12.0),
-        borderSide: BorderSide(color: ColorsApp().gray2),
+        borderSide: BorderSide(color: ColorsApp.gray2),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12.0),
-        borderSide: BorderSide(color: ColorsApp().gray2),
+        borderSide: BorderSide(color: ColorsApp.gray2),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12.0),
-        borderSide: BorderSide(color: ColorsApp().primary),
+        borderSide: BorderSide(color: ColorsApp.primary),
       ),
       suffixIcon: suffixIcon(),
     );
 
     final style = TextStyle(
-      color: colors.text,
+      color: ColorsApp.text,
       fontWeight: FontWeight.w600,
       fontSize: scaleSP(14),
     );

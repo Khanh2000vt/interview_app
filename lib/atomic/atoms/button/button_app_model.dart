@@ -36,9 +36,7 @@ class ButtonAppModel {
     padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
     getSideOutline: (isEnabled) {
-      return BorderSide(
-        color: isEnabled ? ColorsApp().primary : ColorsApp().gray2,
-      );
+      return BorderSide(color: isEnabled ? ColorsApp.primary : ColorsApp.gray2);
     },
   );
 
@@ -58,10 +56,7 @@ class ButtonAppModel {
             ],
             Text(
               text,
-              style: TextStyle(
-                fontWeight: FontWeight.w700,
-                fontSize: scaleSP(16),
-              ),
+              style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
             ),
           ],
         );
@@ -93,8 +88,8 @@ class ButtonAppModel {
         return FilledButton.tonal(
           onPressed: onPress,
           style: FilledButton.styleFrom(
-            backgroundColor: ColorsApp().secondary,
-            foregroundColor: ColorsApp().primary,
+            backgroundColor: ColorsApp.secondary,
+            foregroundColor: ColorsApp.primary,
             padding: defaultStyle.padding,
             shape: defaultStyle.shape,
           ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:interview_app/atomic/screens/auth/config/widgets/config_screen.dart';
+import 'package:interview_app/atomic/screens/main/chat_detail/chat_detail_screen.dart';
 import 'package:interview_app/atomic/screens/main/home/widgets/home_screen.dart';
 import 'package:interview_app/bloc/interview/interview_bloc.dart';
 import 'package:interview_app/routing/routes.dart';
@@ -14,6 +15,7 @@ final GoRouter router = GoRouter(
   initialLocation: Routes.config,
   refreshListenable: interviewStateNotifier,
   redirect: (context, state) async {
+    return Routes.chatDetail;
     final interviewBloc = context.read<InterviewBloc>();
     final interviewState = interviewBloc.state;
     // final currentPath = state.uri.toString();
@@ -39,6 +41,12 @@ final GoRouter router = GoRouter(
       path: Routes.home,
       builder: (context, state) {
         return HomeScreen();
+      },
+    ),
+    GoRoute(
+      path: Routes.chatDetail,
+      builder: (context, state) {
+        return ChatDetailScreen();
       },
     ),
   ],

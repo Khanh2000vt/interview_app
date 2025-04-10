@@ -32,7 +32,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    print('di vao didChangeDependencies');
     final prompt = PromptAI().getPrompt(context);
     handleGemini(prompt);
   }
@@ -104,7 +103,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           )
                           : Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: TextApp(question, fontSize: scaleSP(18.0)),
+                            child: TextApp(question, fontSize: 14),
                           ),
                 ),
               ),

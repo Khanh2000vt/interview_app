@@ -1,3 +1,3 @@
-final class RouterUrl {
-  final String geminiFlash = 'models/gemini-2.0-flash:generateContent';
+abstract final class RouterUrl {
+  static String geminiFlash = 'models/gemini-2.0-flash:generateContent';
 }

@@ -64,7 +64,6 @@ class ConfigScreen extends StatelessWidget {
                     onPressed: () {
                       if (formKey.currentState?.saveAndValidate() ?? false) {
                         final formData = formKey.currentState!.value;
-                        print('Form data: $formData');
                         context.read<InterviewBloc>().add(
                           ConfigSuccess(formData['job'], formData['level']),
                         );

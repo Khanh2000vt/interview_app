@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:interview_app/themes/colors.dart';
 
 final class ThemeApp {
-  ColorsApp colors = ColorsApp();
   ThemeData get theme {
     return ThemeData(fontFamily: 'Urbanist', useMaterial3: true).copyWith(
       // scaffoldBackgroundColor: Colors.amber, // Màu nền
@@ -19,8 +18,8 @@ final class ThemeApp {
       //   style: TextButton.styleFrom(foregroundColor: colors.primary),
       // ),
       colorScheme: ColorScheme.fromSeed(
-        seedColor: colors.primary,
-        primary: colors.primary,
+        seedColor: ColorsApp.primary,
+        primary: ColorsApp.primary,
       ),
     );
   }

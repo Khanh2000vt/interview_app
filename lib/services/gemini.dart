@@ -19,7 +19,7 @@ class GeminiApiClient {
 
     final response = await http.post(
       Uri.parse(
-        '${AppConstants().baseUrlGemini}${RouterUrl().geminiFlash}?key=${AppConstants().keyGemini}',
+        '${AppConstants.baseUrlGemini}${RouterUrl.geminiFlash}?key=${AppConstants.keyGemini}',
       ),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode(payload),

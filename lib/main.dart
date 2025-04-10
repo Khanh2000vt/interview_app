@@ -49,7 +49,7 @@ class MaterialMainApp extends StatelessWidget {
       builder:
           (context, child) => ResponsiveBreakpoints.builder(
             child: child!,
-            breakpoints: AppConstants().breakpoints,
+            breakpoints: AppConstants.breakpoints,
           ),
     );
   }
