@@ -1,20 +1,46 @@
 import 'dart:convert';
 
+import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:http/http.dart' as http;
 import 'package:interview_app/constants/app.dart';
 import 'package:interview_app/services/router_url.dart';
-import 'package:interview_app/shared/chat/chat_message.dart';
 
 class GeminiApiClient {
   Future<String> sendMessage(
-    List<ChatMessage> history,
+    List<types.Message> history,
     String newMessage,
   ) async {
-    List<ChatMessage> updatedHistory = List.from(history)
-      ..add(ChatMessage(role: 'user', content: newMessage));
+    List<types.Message> updatedHistory = List.from(history)..add(
+      types.TextMessage(
+        author: const types.User(id: 'user'),
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        text: newMessage,
+        createdAt: DateTime.now().millisecondsSinceEpoch,
+      ),
+    );
+
+    Map<String, dynamic> toJsonToChat(types.Message message) => {
+      'role': message.author.id,
+      'parts': [
+        {
+          'text':
+              message is types.TextMessage
+                  ? (message).text
+                  : '[Unsupported message type]',
+        },
+      ],
+    };
+
+    String convertResult(String text) {
+      if (text == '') {
+        return '';
+      }
+      return text.replaceAll(RegExp(r'\n{2,}'), '\n').trimRight();
+    }
 
     final payload = {
-      'contents': updatedHistory.map((msg) => msg.toJson()).toList(),
+      'contents':
+          updatedHistory.reversed.map((msg) => toJsonToChat(msg)).toList(),
     };
 
     final response = await http.post(
@@ -28,7 +54,7 @@ class GeminiApiClient {
       final data = jsonDecode(response.body);
       final responseContent =
           data['candidates'][0]['content']['parts'][0]['text'] as String;
-      return responseContent;
+      return convertResult(responseContent);
     } else {
       throw Exception(
         'Failed to call Gemini API: ${response.statusCode} - ${response.body}',

@@ -46,26 +46,26 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> handleGemini(String answer) async {
-    try {
-      setState(() {
-        loading = true;
-      });
-      messages.add(ChatMessage(role: 'user', content: answer));
-      final response = await apiClient.sendMessage(messages, answer);
-      messages.add(ChatMessage(role: 'model', content: response));
-      setState(() {
-        question = response;
-      });
-      _clearForm();
-    } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error: $e')));
-    } finally {
-      setState(() {
-        loading = false;
-      });
-    }
+    // try {
+    //   setState(() {
+    //     loading = true;
+    //   });
+    //   messages.add(ChatMessage(role: 'user', content: answer));
+    //   final response = await apiClient.sendMessage(messages, answer);
+    //   messages.add(ChatMessage(role: 'model', content: response));
+    //   setState(() {
+    //     question = response;
+    //   });
+    //   _clearForm();
+    // } catch (e) {
+    //   ScaffoldMessenger.of(
+    //     context,
+    //   ).showSnackBar(SnackBar(content: Text('Error: $e')));
+    // } finally {
+    //   setState(() {
+    //     loading = false;
+    //   });
+    // }
   }
 
   void _clearForm() {
