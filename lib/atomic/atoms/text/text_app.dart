@@ -22,7 +22,7 @@ class TextApp extends StatelessWidget {
     this.textAlign,
     this.maxLines,
     this.overflow,
-    this.useScreenUtil = true,
+    this.useScreenUtil = false,
     this.fontFamily,
     this.style,
   });

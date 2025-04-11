@@ -1,15 +1,19 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:interview_app/bloc/interview/interview_bloc.dart';
 import 'package:interview_app/constants/app.dart';
+import 'package:interview_app/firebase/remote_config/setup.dart';
+import 'package:interview_app/firebase_options.dart';
 import 'package:interview_app/routing/router.dart';
 import 'package:interview_app/themes/theme.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
 Future<void> main() async {
-  await dotenv.load(fileName: ".env");
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await setupRemoteConfig();
   runApp(const MainApp());
 }
 

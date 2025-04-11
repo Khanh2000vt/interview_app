@@ -3,7 +3,7 @@ import 'package:interview_app/themes/colors.dart';
 
 final class ThemeApp {
   ThemeData get theme {
-    return ThemeData(fontFamily: 'Urbanist', useMaterial3: true).copyWith(
+    return ThemeData(fontFamily: 'Quicksand', useMaterial3: true).copyWith(
       // scaffoldBackgroundColor: Colors.amber, // Màu nền
       // outlinedButtonTheme: OutlinedButtonThemeData(
       //   style: OutlinedButton.styleFrom(foregroundColor: colors.primary),

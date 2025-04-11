@@ -12,35 +12,12 @@ final ValueNotifier<InterviewState> interviewStateNotifier = ValueNotifier(
 );
 
 final GoRouter router = GoRouter(
-  initialLocation: Routes.config,
   refreshListenable: interviewStateNotifier,
-  redirect: (context, state) async {
-    return Routes.chatDetail;
-    final interviewBloc = context.read<InterviewBloc>();
-    final interviewState = interviewBloc.state;
-    // final currentPath = state.uri.toString();
-
-    switch (interviewState) {
-      case InterviewInitial():
-        return Routes.config;
-      case ConfigInterview():
-        return Routes.home;
-      case Unauthenticated():
-        return Routes.config;
-    }
-    // return null;
-  },
   routes: [
     GoRoute(
-      path: Routes.config,
+      path: '/',
       builder: (context, state) {
-        return ConfigScreen();
-      },
-    ),
-    GoRoute(
-      path: Routes.home,
-      builder: (context, state) {
-        return HomeScreen();
+        return ChatDetailScreen();
       },
     ),
     GoRoute(
