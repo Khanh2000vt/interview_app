@@ -3,4 +3,5 @@ abstract final class Routes {
   static const config = '/config';
   static const chatDetail = '/chat-detail';
   static const listChat = '/list-chat';
+  static const createChanel = '/create-chanel';
 }

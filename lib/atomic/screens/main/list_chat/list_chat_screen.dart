@@ -1,54 +1,119 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:http/http.dart' as httpClient;
+import 'package:go_router/go_router.dart';
 import 'package:interview_app/atomic/atoms/chat-item/chat_item_widget.dart';
 import 'package:interview_app/atomic/atoms/infinite-list/infinite_list_app.dart';
-import 'package:interview_app/bloc/infinite_list/infinite_list_bloc.dart';
-import 'package:interview_app/services/list_chat.dart';
+import 'package:interview_app/local/app_database.dart';
+import 'package:interview_app/local/tables/rooms.dart';
+import 'package:interview_app/routing/routes.dart';
 
-class ListChatScreen extends StatelessWidget {
+class ListChatScreen extends StatefulWidget {
   const ListChatScreen({super.key});
 
   @override
+  State<ListChatScreen> createState() => _ListChatScreenState();
+}
+
+class _ListChatScreenState extends State<ListChatScreen> {
+  List<Rooms> data = [];
+  late AppDatabase database;
+  late RoomsRepository roomsRepository;
+  bool isLoading = true;
+  bool isError = false;
+
+  @override
+  void initState() {
+    super.initState();
+    database = AppDatabase();
+    roomsRepository = RoomsRepository(database);
+    getData();
+  }
+
+  Future<void> getData() async {
+    try {
+      final rooms = await roomsRepository.getAllRooms();
+      setState(() {
+        data = rooms;
+        isError = false;
+      });
+    } catch (e) {
+      setState(() {
+        isError = true;
+      });
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  Future<void> handleDeleteRoom(Rooms room) async {
+    try {
+      await roomsRepository.deleteRoom(room.id);
+      getData();
+    } catch (e) {
+      setState(() {
+        isError = true;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final infiniteListBloc = InfiniteListBloc(fetchData: fetchPosts);
     return Scaffold(
-      appBar: AppBar(title: Text('Chat')),
-      body: BlocProvider.value(
-        value: infiniteListBloc,
-        child: Builder(
-          builder: (context) {
-            return InfiniteListApp(
-              itemBuilder: (product, index) => ChatItemWidget(post: product),
-              bloc: infiniteListBloc,
-            );
-          },
-        ),
+      appBar: AppBar(
+        title: Text('Chat'),
+        actions: [
+          IconButton(
+            onPressed: () {
+              context.push(Routes.createChanel);
+            },
+            icon: Icon(Icons.add),
+          ),
+        ],
+      ),
+      body: InfiniteListApp<Rooms>(
+        onRefresh: getData,
+        itemBuilder:
+            (room, index) =>
+                ChatItemWidget(room: room, onDelete: handleDeleteRoom),
+        data: data,
+        emptyBuilder: EmptyListWidget(),
+        isLoading: isLoading,
+        isError: isError,
       ),
     );
   }
 }
 
-Future<List<dynamic>> fetchPosts(int startIndex, int postLimit) async {
-  print('fetchPosts');
-  final response = await httpClient.get(
-    Uri.https('jsonplaceholder.typicode.com', '/posts', <String, String>{
-      '_start': '$startIndex',
-      '_limit': '$postLimit',
-    }),
-  );
-  if (response.statusCode == 200) {
-    final body = json.decode(response.body) as List;
-    return body.map((dynamic json) {
-      final map = json as Map<String, dynamic>;
-      return ChatItemList(
-        id: map['id'] as int,
-        title: map['title'] as String,
-        body: map['body'] as String,
-      );
-    }).toList();
+class EmptyListWidget extends StatelessWidget {
+  const EmptyListWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(Icons.chat_bubble_outline, size: 50),
+          const SizedBox(height: 16),
+          Text(
+            'No chats available',
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Start a new chat',
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
+          const SizedBox(height: 16),
+          IconButton(
+            onPressed: () {
+              context.push(Routes.createChanel);
+            },
+            icon: const Icon(Icons.add_circle_outline, size: 50),
+          ),
+        ],
+      ),
+    );
   }
-  throw Exception('error fetching posts');
 }
