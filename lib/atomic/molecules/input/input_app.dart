@@ -103,6 +103,10 @@ class _InputAppState extends State<InputApp> {
       fontSize: scaleSP(14),
     );
 
+    if (props.hide == true) {
+      return const SizedBox.shrink();
+    }
+
     return FormBuilderTextField(
       name: props.name,
       initialValue: props.initialValue,

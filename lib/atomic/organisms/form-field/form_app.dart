@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:interview_app/atomic/molecules/input/input_app.dart';
+import 'package:interview_app/atomic/molecules/switch/switch_app.dart';
 import 'package:interview_app/atomic/organisms/form-field/form_app_model.dart';
 import 'package:interview_app/models/form_model.dart';
 import 'package:interview_app/themes/scale.dart';
@@ -15,6 +16,8 @@ class FormApp extends StatelessWidget {
     switch (field) {
       case InputFieldModel():
         return InputApp(field);
+      case SwitchFieldModel():
+        return SwitchAppField(field);
     }
   }
 

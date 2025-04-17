@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
@@ -8,6 +9,7 @@ import 'package:interview_app/constants/common.dart';
 import 'package:interview_app/firebase/remote_config/remote_config.dart';
 import 'package:interview_app/local/app_database.dart';
 import 'package:interview_app/local/tables/chats.dart';
+import 'package:interview_app/local/tables/files.dart';
 import 'package:interview_app/local/tables/rooms.dart';
 import 'package:interview_app/routing/routes.dart';
 import 'package:interview_app/shared/common/prompt.dart';
@@ -26,11 +28,16 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
   final List<types.TextMessage> messagesDraft = [];
   late final GenerativeModel _model;
   late final ChatSession _chat;
+  late final ChatSession _answer;
   late ChatsRepository chatsRepository;
   late AppDatabase database;
+  final TextEditingController textController = TextEditingController();
+  late RoomsRepository roomsRepository;
 
   bool replying = false;
   int page = 1;
+  bool isStartAnswer = true;
+  bool answering = true;
 
   final _user = types.User(id: ChatConstants.user);
 
@@ -38,6 +45,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
   void initState() {
     super.initState();
     database = AppDatabase();
+    roomsRepository = RoomsRepository(database);
     chatsRepository = ChatsRepository(database);
     _model = GenerativeModel(
       model: 'gemini-1.5-flash',
@@ -94,14 +102,24 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
   }
 
   Future<void> onInitStartData() async {
-    final roomsRepository = RoomsRepository(database);
     final rooms = await roomsRepository.getRoomById(widget.id);
     if (rooms == null) {
       return;
     }
     _chat = _model.startChat();
-    final prompt = await PromptAI().getPrompt(rooms.job, rooms.level);
-    onChatAi(prompt);
+    if (rooms.idFile != null) {
+      final prompt = PromptAI().getPromptCV();
+      final filesRepository = FilesRepository(database);
+      final file = await filesRepository.getFileById(rooms.idFile ?? '');
+      final dataPart =
+          file?.fileContent != null
+              ? DataPart('application/pdf', file!.fileContent)
+              : null;
+      onChatAi(prompt, dataPart: dataPart);
+    } else {
+      final prompt = await PromptAI().getPrompt(rooms.job, rooms.level);
+      onChatAi(prompt);
+    }
     roomsRepository.updateRoomIsActive(widget.id, true);
   }
 
@@ -118,7 +136,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     database.close();
   }
 
-  Future<void> onChatAi(String answer) async {
+  Future<void> onChatAi(String answer, {DataPart? dataPart}) async {
     final userMessage = types.TextMessage(
       author: _user,
       id: DateTime.now().millisecondsSinceEpoch.toString(),
@@ -129,9 +147,14 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     setState(() {
       messages.insert(0, userMessage);
       replying = true;
+      answering = true;
     });
     try {
-      final response = await _chat.sendMessage(Content.text(answer));
+      final content =
+          dataPart != null
+              ? Content.multi([TextPart(answer), dataPart])
+              : Content.text(answer);
+      final response = await _chat.sendMessage(content);
       final modelMessage = types.TextMessage(
         author: types.User(id: ChatConstants.model),
         id: DateTime.now().millisecondsSinceEpoch.toString(),
@@ -149,6 +172,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     } finally {
       setState(() {
         replying = false;
+        answering = false;
       });
     }
   }
@@ -177,6 +201,50 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     });
   }
 
+  Future<void> previewTextAnswer() async {
+    try {
+      setState(() {
+        answering = true;
+      });
+      final text = messages[0].text;
+      final rooms = await roomsRepository.getRoomById(widget.id);
+      if (rooms == null) {
+        return;
+      }
+      if (isStartAnswer) {
+        _answer = _model.startChat();
+        isStartAnswer = false;
+      }
+      String prompt = '';
+      Content content;
+      if (rooms.idFile != null) {
+        final filesRepository = FilesRepository(database);
+        final file = await filesRepository.getFileById(rooms.idFile ?? '');
+        prompt = PromptAI().getAnswer(text, rooms.job, rooms.level);
+        content =
+            file?.fileContent != null
+                ? Content.multi([
+                  TextPart(prompt),
+                  DataPart('application/pdf', file!.fileContent),
+                ])
+                : Content.text(prompt);
+      } else {
+        prompt = PromptAI().getAnswer(text, rooms.job, rooms.level);
+        content = Content.text(prompt);
+      }
+
+      final response = await _answer.sendMessage(content);
+      textController.text = response.text ?? '';
+      textController.selection = TextSelection.fromPosition(
+        TextPosition(offset: textController.text.length),
+      );
+    } finally {
+      setState(() {
+        answering = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final filterMessage = filterMessages(messages);
@@ -194,8 +262,14 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
       body: Chat(
         messages: filterMessage,
         onSendPressed: _handleSendPressed,
+        inputOptions: InputOptions(textEditingController: textController),
         user: _user,
-        onAttachmentPressed: () {},
+        onAttachmentPressed: () {
+          if (answering) {
+            return;
+          }
+          previewTextAnswer();
+        },
         onMessageTap: (context, message) {},
         typingIndicatorOptions: TypingIndicatorOptions(
           typingUsers:
@@ -228,7 +302,14 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
               shape: BoxShape.circle,
             ),
             padding: const EdgeInsets.all(8.0),
-            child: const Icon(Icons.mic, color: Colors.white),
+            child:
+                answering
+                    ? CupertinoActivityIndicator(color: Colors.white)
+                    : const Icon(
+                      Icons.auto_awesome_rounded,
+                      color: Colors.white,
+                      size: 16,
+                    ),
           ),
           sendButtonIcon: Icon(Icons.send, color: ColorsApp.primary),
           attachmentButtonMargin: EdgeInsets.all(0),

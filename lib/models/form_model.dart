@@ -9,7 +9,8 @@ sealed class FormFieldModel<T> {
   String get name;
   T? get initialValue;
   bool get enabled;
-  List<FormFieldValidator<String>>? get validators => [];
+  bool? get hide;
+  List<FormFieldValidator<T>>? get validators => [];
 
   bool hasRequired() {
     if (validators == null || validators!.isEmpty) {
@@ -38,6 +39,8 @@ class InputFieldModel extends FormFieldModel<String> {
   final String? initialValue;
   @override
   final List<FormFieldValidator<String>>? validators;
+  @override
+  bool? hide;
 
   InputFieldModel({
     this.enabled = true,
@@ -51,6 +54,7 @@ class InputFieldModel extends FormFieldModel<String> {
     this.textInputAction,
     this.validators,
     this.inputPassword = false,
+    this.hide = false,
   });
 
   bool isInputPassword() {
@@ -58,4 +62,31 @@ class InputFieldModel extends FormFieldModel<String> {
   }
 
   dynamic getFormBuilder() {}
+}
+
+class SwitchFieldModel extends FormFieldModel<bool> {
+  final String? label;
+  final String? hint;
+  final void Function(bool value)? onValueChanged;
+  @override
+  final bool? initialValue;
+  @override
+  final bool enabled;
+  @override
+  final String name;
+  @override
+  final List<FormFieldValidator<bool>>? validators;
+  @override
+  bool? hide;
+
+  SwitchFieldModel({
+    this.label,
+    this.hint,
+    this.onValueChanged,
+    this.initialValue,
+    this.enabled = true,
+    required this.name,
+    this.validators,
+    this.hide = false,
+  });
 }

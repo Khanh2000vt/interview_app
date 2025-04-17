@@ -11,7 +11,7 @@ final ValueNotifier<InterviewState> interviewStateNotifier = ValueNotifier(
 );
 
 final GoRouter router = GoRouter(
-  initialLocation: Routes.listChat,
+  initialLocation: Routes.createChanel,
   refreshListenable: interviewStateNotifier,
   routes: [
     GoRoute(

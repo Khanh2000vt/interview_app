@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 import 'package:interview_app/local/app_database.dart';
+import 'package:interview_app/local/tables/files.dart';
 
 @DataClassName('Rooms')
 class RoomsTable extends Table {
@@ -7,6 +8,7 @@ class RoomsTable extends Table {
   TextColumn get job => text().withLength(min: 1)();
   TextColumn get level => text().withLength(min: 1)();
   BoolColumn get isActive => boolean().withDefault(const Constant(false))();
+  TextColumn get idFile => text().references(FilesTable, #id).nullable()();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
   @override
   Set<Column> get primaryKey => {id};
